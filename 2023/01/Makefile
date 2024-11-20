@@ -15,7 +15,7 @@ $(TARGET): $(SOURCES)
 
 run: $(TARGET)
 	if [ -f solution ]; then \
-		diff -y <(./$(TARGET) <input) solution \
+		diff -y <(./$(TARGET) input) solution \
 			&& echo 'Solution is correct' \
 			|| echo 'Solution is incorrect'; \
 	else \

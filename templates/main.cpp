@@ -7,6 +7,10 @@ using solutionType = unsigned int;
 std::array<solutionType, 2>
 solve(std::istream &input)
 {
+	std::string line;
+	while (input) {
+		getline(input, line);
+	}
 	return {0, 0};
 }
 
