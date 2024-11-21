@@ -5,6 +5,8 @@
 #include <string_view>
 #include <vector>
 
+#include "util.h"
+
 using solutionType = size_t;
 
 struct Bag {
@@ -14,22 +16,6 @@ struct Bag {
 };
 
 constexpr Bag limit { .red = 12, .green = 13, .blue = 14 };
-
-/***
- * split std::string_view string into substrings delimited by delim.
- */
-std::vector<std::string_view>
-split(std::string_view const &string, std::string const &delim)
-{
-	std::vector<std::string_view> splits;
-	splits.push_back(string.substr(0, string.find(delim)));
-	for (size_t pos = string.find(delim);
-		 pos < string.size();
-		 pos = string.find(delim, pos + delim.size())) {
-		splits.push_back(string.substr(pos + delim.size(), string.find(delim, pos + delim.size()) - pos - delim.size()));
-	}
-	return splits;
-}
 
 std::vector<Bag>
 parseLine(std::string const &line)

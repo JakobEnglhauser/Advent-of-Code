@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-Wall -O3 -g
+CXXFLAGS=-Wall -O3 -I../../include/
 TARGET=main
 SOURCES=main.cpp
 
@@ -15,9 +15,9 @@ $(TARGET): $(SOURCES)
 
 run: $(TARGET)
 	if [ -f solution ]; then \
-		diff -y <(./$(TARGET) input) solution \
+		diff -y <(time ./$(TARGET) input) solution \
 			&& echo 'Solution is correct' \
 			|| echo 'Solution is incorrect'; \
 	else \
-		./$(TARGET) <input | tee solution; \
+		time ./$(TARGET) <input | tee solution; \
 	fi
