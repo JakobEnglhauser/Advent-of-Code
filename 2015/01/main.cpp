@@ -2,17 +2,29 @@
 #include <array>
 #include <fstream>
 
-using solutionType = unsigned int;
+using solutionType = long;
 
 std::array<solutionType, 2>
 solve(std::istream &input)
 {
-	std::array<solutionType, 2> sum{0};
+	solutionType floor = 0;
+	solutionType basement = -1;
 	std::string line;
-	while (input) {
-		getline(input, line);
+	getline(input, line);
+	for (auto const &c : line) {
+		switch (c) {
+		case '(':
+			++floor;
+			break;
+		case ')':
+			--floor;
+			break;
+		}
+		if (floor < 0 and basement == -1) {
+			basement = &c - line.c_str() + 1;
+		}
 	}
-	return sum;
+	return { floor, basement };
 }
 
 int
