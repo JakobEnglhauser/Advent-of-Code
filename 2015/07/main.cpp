@@ -74,7 +74,7 @@ solve(std::istream &input)
 	std::array<solutionType, 2> signal{{0, 0}};
 	/* Parse input */
 	std::unordered_map<std::string, Part> parts;
-	std::regex lineParser(R"(([0-9a-z]*) ?([A-Z]*) ?([0-9a-z]*) -> ([a-z]*))");
+	std::regex const lineParser(R"(([0-9a-z]*) ?([A-Z]*) ?([0-9a-z]*) -> ([a-z]*))");
 	std::string line;
 	while (input) {
 		getline(input, line);

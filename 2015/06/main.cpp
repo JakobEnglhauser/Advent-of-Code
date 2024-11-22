@@ -11,7 +11,7 @@ std::array<solutionType, 2>
 solve(std::istream &input)
 {
 	std::array<solutionType, 2> sum{0};
-	std::regex lineParser(R"((turn on|turn off|toggle) ([0-9]*),([0-9]*) through ([0-9]*),([0-9]*))");
+	std::regex const lineParser(R"((turn on|turn off|toggle) ([0-9]*),([0-9]*) through ([0-9]*),([0-9]*))");
 	Grid<bool, 1000, 1000> grid1(false);
 	Grid<unsigned long, 1000, 1000> grid2(0);
 	std::string line;
@@ -22,9 +22,9 @@ solve(std::istream &input)
 		}
 		std::smatch match;
 		std::regex_match(line, match, lineParser);
-		std::ssub_match action = match[1];
-		std::array<size_t, 2> from{{std::stoul(match[2]), std::stoul(match[3])}};
-		std::array<size_t, 2> to{{std::stoul(match[4]), std::stoul(match[5])}};
+		std::ssub_match const action = match[1];
+		std::array<size_t const, 2> const from{{std::stoul(match[2]), std::stoul(match[3])}};
+		std::array<size_t const, 2> const to{{std::stoul(match[4]), std::stoul(match[5])}};
 
 		for (size_t x = from[0]; x <= to[0]; ++x) {
 			for (size_t y = from[1]; y <= to[1]; ++y) {

@@ -1,35 +1,31 @@
 #include <iostream>
 #include <array>
 #include <fstream>
-#include <string>
 #include <regex>
 
 using solutionType = unsigned int;
-
-std::string const vowels = "aoeui";
 
 std::array<solutionType, 2>
 solve(std::istream &input)
 {
 	std::array<solutionType, 2> sum{0};
-	std::array<std::regex const, 5> const regex{{
-		std::regex(R"([aoeui].*[aoeui].*[aoeui])"),
-		std::regex(R"((.)\1)"),
-		std::regex(R"(ab|cd|pq|xy)"),
-		std::regex(R"((.).\1)"),
-		std::regex(R"((..).*\1)")
-	}};
+	std::regex const regex(R"(\\x[0-9a-f][0-9a-f]|\\\\|\\")");
 	std::string line;
 	while (input) {
 		getline(input, line);
-		if (std::regex_search(line, regex[0])
-		    and std::regex_search(line, regex[1])
-		    and not std::regex_search(line, regex[2])) {
-			++sum[0];
+		if (line.empty()) {
+			break;
 		}
-		if (std::regex_search(line, regex[3]) and std::regex_search(line, regex[4])) {
-			++sum[1];
+		/* Part 1 */
+		std::string const raw = std::regex_replace(line, regex, " ");
+		sum[0] += line.size() - raw.size() + 2;
+		/* Part 2 */
+		for (auto const &c : line) {
+			if (c == '"' or c == '\\') {
+			}
+			sum[1] += (c == '"' or c == '\\') ? 1 : 0;
 		}
+		sum[1] += 2;
 	}
 	return sum;
 }

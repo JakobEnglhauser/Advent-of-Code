@@ -39,7 +39,7 @@ solve(std::istream &input)
 {
 	std::string line;
 	std::array<unsigned int, 2> sum{0};
-	std::array<std::regex, 2> regex{
+	std::array<std::regex const, 2> const regex{
 		std::regex("[0-9]"),
 		std::regex("[0-9]|on(?=e)|tw(?=o)|thre(?=e)|four|fiv(?=e)|six|seve(?=n)|eigh(?=t)|nin(?=e)") /* lookaheads solve the issue of overlapping words */
 	};
