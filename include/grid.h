@@ -4,6 +4,9 @@
 #include <vector>
 #include <stdexcept>
 
+/**
+ * 2-dimensional heap allocated array
+ */
 template<typename T, size_t X, size_t Y>
 class Grid {
 public:
