@@ -11,6 +11,9 @@ solve(std::istream &input)
 	std::string line;
 	while (input) {
 		getline(input, line);
+		if (line.empty()) {
+			break;
+		}
 	}
 	return sum;
 }
