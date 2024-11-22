@@ -45,7 +45,7 @@ solve(std::istream &input)
 	/* Part 1 */
 	{
 		std::set<Position> visited;
-		Position pos = {0, 0};
+		Position pos{0, 0};
 		visited.insert(pos);
 		for (char c : line) {
 			move(pos, c);
@@ -56,7 +56,7 @@ solve(std::istream &input)
 	/* Part 2 */
 	{
 		std::set<Position> visited;
-		std::array<Position, 2> pos = {{{0, 0}, {0, 0}}};
+		std::array<Position, 2> pos{{{0, 0}, {0, 0}}};
 		visited.insert(pos[0]);
 		char toggle = 0;
 		for (char c : line) {
