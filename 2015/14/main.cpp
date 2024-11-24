@@ -38,7 +38,7 @@ solve(std::istream &input)
 		values.reserve(3);
 		for (size_t i = line.find_first_of("0123456789"); i < line.size(); i = line.find_first_of("0123456789", i)) {
 			char *end;
-			long n = std::strtol(&line.c_str()[i], &end, 10);
+			unsigned int n = std::strtoul(&line.c_str()[i], &end, 10);
 			values.push_back(n);
 			i = end - line.c_str();
 		}
