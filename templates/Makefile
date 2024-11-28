@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-Wall -O3 -I../../include/
+CXXFLAGS=-Wall -O3 -I../../include/ -std=c++2b
 TARGET=main
 SOURCES=main.cpp
 
