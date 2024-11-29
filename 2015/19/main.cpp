@@ -3,49 +3,93 @@
 #include <fstream>
 #include <set>
 #include <map>
+#include <list>
+#include <iterator>
 
 #include "util.h"
+#include "debug.h"
 
 using solutionType = size_t;
 
-std::set<std::string>
-expandMolecules(std::set<std::string> const &molecules, std::map<std::string, std::set<std::string>> replacements, std::string const &target = "")
-{
-	std::set<std::string> creations;
-	for (auto const &molecule : molecules) {
-		for (auto const &[in, repl] : replacements) {
-			for (auto const &r : repl) {
-				for (size_t pos = molecule.find(in); pos < molecule.size(); pos = molecule.find(in, pos + 1)) {
-					if (not target.empty()
-						and pos > std::distance(target.begin(), std::get<0>(std::mismatch(target.begin(), target.end(), molecule.begin())))) {
-						break;
-					}
-					std::string out;
-					out.reserve(molecule.size() - in.size() + r.size());
-					std::copy(molecule.begin(), molecule.begin() + pos, std::back_inserter(out));
-					std::copy(r.begin(), r.end(), std::back_inserter(out));
-					std::copy(molecule.begin() + pos + in.size(), molecule.end(), std::back_inserter(out));
-					creations.insert(out);
-				}
+using Atom = std::string;
+
+struct Molecule {
+	std::vector<Atom> atoms;
+
+	bool
+	operator<(Molecule const &rhs) const {
+		if (atoms.size() != rhs.atoms.size()) {
+			return atoms.size() < rhs.atoms.size();
+		}
+		for (auto i = atoms.begin(), j = rhs.atoms.begin(); i != atoms.end(); ++i, ++j ) {
+			if (*i != *j) {
+				return *i < *j;
 			}
+		}
+		return false; /* lhs == rhs */
+	}
+};
+
+std::ostream &
+operator<<(std::ostream &stream, Molecule const &molecule)
+{
+	stream << molecule.atoms;
+	return stream;
+}
+
+std::set<Molecule>
+expand(Molecule const &molecule, std::multimap<Atom const &, Molecule> const &rules)
+{
+	std::set<Molecule> creations;
+	for (auto a = molecule.atoms.begin(); a != molecule.atoms.end(); ++a) {
+		auto [start, end] = rules.equal_range(*a);
+		for (auto r = start; r != end; ++r) {
+			Molecule m;
+			m.atoms.reserve(molecule.atoms.size() + r->second.atoms.size() - 1);
+			std::copy(molecule.atoms.begin(), a, std::back_insert_iterator(m.atoms));
+			std::copy(r->second.atoms.begin(), r->second.atoms.end(), std::back_insert_iterator(m.atoms));
+			std::copy(a + 1, molecule.atoms.end(), std::back_insert_iterator(m.atoms));
+			creations.insert(std::move(m));
 		}
 	}
 	return creations;
 }
 
-std::set<std::string>
-expandMolecules(std::string const &molecule, std::map<std::string, std::set<std::string>> replacements)
+std::set<Molecule> &
+expand(Molecule const &molecule, std::multimap<Atom const &, Molecule> const &rules, std::set<Molecule> &creations, Molecule const &target)
 {
-	std::set<std::string> molecules;
-	molecules.insert(molecule);
-	return expandMolecules(molecules, replacements);
+	for (auto a = molecule.atoms.begin();
+		 a != molecule.atoms.end() and a != std::mismatch(molecule.atoms.begin(), molecule.atoms.end(), target.atoms.begin(), target.atoms.end()).first + 1;
+		 ++a) {
+		auto [start, end] = rules.equal_range(*a);
+		for (auto r = start; r != end; ++r) {
+			Molecule m;
+			m.atoms.reserve(molecule.atoms.size() + r->second.atoms.size() - 1);
+			std::copy(molecule.atoms.begin(), a, std::back_insert_iterator(m.atoms));
+			std::copy(r->second.atoms.begin(), r->second.atoms.end(), std::back_insert_iterator(m.atoms));
+			std::copy(a + 1, molecule.atoms.end(), std::back_insert_iterator(m.atoms));
+			creations.insert(std::move(m));
+		}
+	}
+	return creations;
+}
+
+std::set<Molecule>
+expand(std::set<Molecule> const &molecules, std::multimap<Atom const &, Molecule> const &rules, Molecule const &target)
+{
+	std::set<Molecule> creations;
+	for (auto const &m : molecules) {
+		expand(m, rules, creations, target);
+	}
+	return creations;
 }
 
 std::array<solutionType, 2>
 solve(std::istream &input)
 {
 	std::array<solutionType, 2> solution{0};
-	std::map<std::string, std::set<std::string>> replacements;
+	std::set<Atom> symbols;
+	std::multimap<Atom const &, Molecule> rules;
 	std::string line;
 	while (input) {
 		getline(input, line);
@@ -53,22 +97,45 @@ solve(std::istream &input)
 			break;
 		}
 		auto rule = split(line, " => ");
-		replacements[std::string(rule[0])].insert(std::string(rule[1]));
+		Atom s{std::string(rule[0])};
+		if (not (symbols.contains(s))) {
+			symbols.insert(s);
+		}
+		auto search = symbols.find(s);
+		Atom const &lhs = *search;
+		Molecule rhs;
+		for (char const *start = &rule[1][0], *end = start + 1; *start != '\0' ; ++end) {
+			if (*end == '\0' or (*end >= 'A' and *end <= 'Z')) {
+				rhs.atoms.emplace_back(std::string(start, end));
+				start = end;
+			}
+		}
+		rules.emplace(lhs, rhs);
 	}
 	getline(input, line);
-	/* Part 1 */
-	auto creations = expandMolecules(line, replacements);
-	solution[0] = creations.size();
-	/* Part 2 */
-	creations.clear();
-	creations.insert("e");
-	size_t i;
-	for (i = 0; not (creations.contains(line) or creations.empty()); ++i) {
-		std::erase_if(creations, [&line](auto const &c) { return c.size() >= line.size(); });
-		creations = expandMolecules(creations, replacements, line);
-		break; // TODO
+	Molecule molecule;
+	for (char const *start = &line[0], *end = start + 1; *start != '\0' ; ++end) {
+		if (*end == '\0' or (*end >= 'A' and *end <= 'Z')) {
+			molecule.atoms.emplace_back(std::string(start, end));
+			start = end;
+		}
 	}
-	solution[1] = i;
+
+	std::cout << symbols << std::endl;
+	std::cout << molecule << std::endl;
+	std::cout << rules << std::endl;
+
+	solution[0] = expand(molecule, rules).size();
+
+	auto creations = expand(Molecule({"e"}), rules);
+	for (unsigned int i = 1; i < 20; ++i) {
+		if (creations.contains(molecule)) {
+			solution[1] = i;
+			break;
+		}
+		std::cout << i << ": " << creations.size() << "\n";
+		creations = expand(creations, rules, molecule);
+	}
 
 	return solution;
 }
