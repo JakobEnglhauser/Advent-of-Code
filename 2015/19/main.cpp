@@ -11,9 +11,52 @@
 
 using solutionType = size_t;
 
-using Atom = std::string;
+//using Atom = std::string;
 
-struct Molecule {
+struct Atom
+{
+	unsigned char id;
+
+	/**
+	 * Assumes str consists of exactly 1 lower case letter or 1 upper case letter
+	 * optionally followed by 1 lower case letter.
+	 */
+	Atom(std::string const &str) {
+		id = (str[0] >= 'a' and str[0] <= 'z') ?
+			str[0] - 'a' + 1
+			: ((str[0] - 'A' + 1) << 4) | (str.size() > 1 ? str[1] - 'a' + 1 : 0);
+	}
+
+	bool
+	operator==(Atom const &other) const {
+		return id == other.id;
+	}
+
+	bool
+	operator!=(Atom const &other) const {
+		return id != other.id;
+	}
+
+	bool
+	operator<(Atom const &other) const {
+		return id < other.id;
+	}
+};
+
+std::ostream &
+operator<<(std::ostream &stream, Atom const &atom)
+{
+	if ((atom.id & 0xf0) > 0) {
+		stream << static_cast<char>((atom.id >> 4) - 1 + 'A');
+	}
+	if ((atom.id & 0x0f) > 0) {
+		stream << static_cast<char>((atom.id & 0x0f) - 1 + 'a');
+	}
+	return stream;
+}
+
+struct Molecule
+{
 	std::vector<Atom> atoms;
 
 	bool
@@ -90,6 +133,7 @@ solve(std::istream &input)
 	std::array<solutionType, 2> solution{0};
 	std::set<Atom> symbols;
 	std::multimap<Atom const &, Molecule> rules;
+	//std::multimap<Molecule, Atom const &> rules;
 	std::string line;
 	while (input) {
 		getline(input, line);
@@ -127,7 +171,7 @@ solve(std::istream &input)
 
 	solution[0] = expand(molecule, rules).size();
 
-	auto creations = expand(Molecule({"e"}), rules);
+	auto creations = expand(Molecule({Atom("e")}), rules);
 	for (unsigned int i = 1; i < 20; ++i) {
 		if (creations.contains(molecule)) {
 			solution[1] = i;
