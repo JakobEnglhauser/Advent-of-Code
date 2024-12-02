@@ -4,6 +4,7 @@
 #include <vector>
 #include <string_view>
 #include <string>
+#include <cstdlib>
 
 /***
  * split std::string_view string into substrings delimited by delim.
@@ -25,6 +26,19 @@ split(std::string_view const &string, std::string const &delim)
 		}
 	}
 	return splits;
+}
+
+template<typename N>
+std::vector<N>
+toInts(std::string const &string, int base = 0)
+{
+	std::vector<N> ints;
+	char *end;
+	ints.push_back(std::strtol(string.c_str(), &end, base));
+	while (*end != '\0') {
+		ints.push_back(std::strtol(end, &end, base));
+	}
+	return ints;
 }
 
 #endif
