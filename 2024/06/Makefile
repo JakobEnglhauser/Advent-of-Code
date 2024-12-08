@@ -1,4 +1,4 @@
-SIZE=140
+SIZE=130
 CXX=g++
 CXXFLAGS=-Wall -O3 -I../../include/ -std=c++2b -DSIZE=$(SIZE)
 TARGET=main
