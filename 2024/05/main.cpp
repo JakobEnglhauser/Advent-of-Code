@@ -37,7 +37,7 @@ solve(std::istream &input)
 		regexScan(line, regexRule, left, right);
 		rules.emplace_back(left, right);
 	}
-	auto ordered = std::bind(pagesOrdered, rules, std::placeholders::_1, std::placeholders::_2);
+	auto ordered = std::bind_front(pagesOrdered, rules);
 	while (input) {
 		getline(input, line);
 		if (line.empty()) {
