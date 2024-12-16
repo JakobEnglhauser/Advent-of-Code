@@ -16,6 +16,12 @@ void parseMatch(std::ssub_match const &match, int& var)
 }
 
 template<>
+void parseMatch(std::ssub_match const &match, long& var)
+{
+	var = std::stol(match.str());
+}
+
+template<>
 void parseMatch(std::ssub_match const &match, unsigned int& var)
 {
 	var = std::stoul(match.str());
