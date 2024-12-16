@@ -5,7 +5,9 @@
 
 #include "grid.h"
 
+#ifndef SIZE
 #define SIZE 130
+#endif
 
 using solutionType = unsigned int;
 
@@ -66,10 +68,10 @@ solve(std::istream &input)
 {
 	std::array<solutionType, 2> count{0};
 	Grid<char, SIZE> map;
+	input >> map;
 	std::pair<size_t, size_t> start;
 	for (size_t x = 0; x < SIZE; ++x) {
 		for (size_t y = 0; y < SIZE; ++y) {
-			input >> map[x, y];
 			if (map[x, y] == '^') {
 				start = {x, y};
 			}

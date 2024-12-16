@@ -6,7 +6,9 @@
 
 #include "grid.h"
 
+#ifndef SIZE
 #define SIZE 53
+#endif
 
 using solutionType = size_t;
 
@@ -36,9 +38,7 @@ solve(std::istream &input)
 {
 	std::array<solutionType, 2> trailCount{0};
 	Grid<unsigned char, SIZE> grid;
-	for (size_t i = 0; i < SIZE * SIZE; ++i) {
-		input >> grid[i];
-	}
+	input >> grid;
 	for (size_t x = 0; x < SIZE; ++x) {
 		for (size_t y = 0; y < SIZE; ++y) {
 			if (grid[x, y] == '0') {

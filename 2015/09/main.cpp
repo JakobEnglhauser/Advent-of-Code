@@ -8,6 +8,7 @@
 #include "grid.h"
 
 using solutionType = unsigned int;
+
 #ifndef CITY_COUNT
 #define CITY_COUNT 8
 #endif

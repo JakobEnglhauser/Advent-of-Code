@@ -5,7 +5,9 @@
 
 #include "grid.h"
 
+#ifndef SIZE
 #define SIZE 140
+#endif
 
 using solutionType = unsigned int;
 
@@ -14,11 +16,7 @@ solve(std::istream &input)
 {
 	std::array<solutionType, 2> sum{0};
 	Grid<char, SIZE> grid;
-	for (std::size_t x = 0; x < SIZE; ++x) {
-		for (std::size_t y = 0; y < SIZE; ++y) {
-			input >> grid[x, y];
-		}
-	}
+	input >> grid;
 	/* Part 1 */
 	for (std::size_t x = 0; x < SIZE; ++x) {
 		std::size_t y;

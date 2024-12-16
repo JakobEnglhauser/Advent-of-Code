@@ -149,5 +149,17 @@ operator<<(std::ostream &stream, const Grid<T, X, Y> &grid)
 	return stream;
 }
 
+template<typename T, size_t X, size_t Y = X>
+bool
+operator>>(std::istream &stream, Grid<T, X, Y> &grid)
+{
+	for (size_t i = 0; i < X * Y; ++i) {
+		if (not (stream >> grid[i])) {
+			return false;
+		}
+	}
+	return true;
+}
+
 #endif
 

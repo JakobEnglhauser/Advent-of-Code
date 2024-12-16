@@ -8,6 +8,7 @@
 #include "grid.h"
 
 using solutionType = int;
+
 #ifndef GUEST_COUNT
 #define GUEST_COUNT 8
 #endif
